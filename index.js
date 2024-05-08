@@ -9,7 +9,7 @@ global.client = {
 
 global.client.config = JSON.parse(readFileSync('./config/main.config.json'));
 var langText;
-if(!existsSync(client.config.LANGUAGE)) langText = readFileSync(`${__dirname}\\lang\\en.lang`,'utf-8').split(/\r?\n|\r/);
+if(!existsSync(`./lang/${client.config.LANGUAGE}.lang`)) langText = readFileSync(`${__dirname}\\lang\\en.lang`,'utf-8').split(/\r?\n|\r/);
 else langText = readFileSync(`${__dirname}\\lang\\${global.client.config.LANGUAGE || 'en'}.lang`,'utf-8').split(/\r?\n|\r/);
 var langData = langText.filter(item => item.charAt(0) != '#' && item != '');
 for (var i = 0; i < langData.length; i++) {
