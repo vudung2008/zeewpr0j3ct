@@ -1,0 +1,17 @@
+{
+    "DEVMODE": false,
+    "APPSTATEPATH": "appstate.json",
+    "PREFIX": "!",
+    "LANGUAGE": "d",
+    "FCAOPTION": {
+        "selfListen": false,
+        "listenEvents": true,
+        "updatePresence": false,
+        "forceLogin": false,
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18",
+        "autoMarkDelivery": true,
+        "autoMarkRead": false
+    },
+    "MongoDB": "mongodb+srv://DungDz:vdIbilCjp55RiEV1@cluster0.6z8juk0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "ADMINID": [100071021834010]
+}

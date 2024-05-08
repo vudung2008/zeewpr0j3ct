@@ -1,0 +1,21 @@
+{
+  "name": "zeewpr0j3ct",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dotenv": "^16.4.5",
+    "facebook-chat-api": "^1.8.0",
+    "fs": "^0.0.1-security",
+    "mongoose": "^8.3.3",
+    "mongoose-sequence": "^6.0.1"
+  }
+}

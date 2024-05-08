@@ -1,0 +1,13 @@
+notFoundAppstate=Appstate file not found!
+foundAppstate=Appstate file found!
+errorLoadEvent=Unable to load event $1!
+errorLoadCommand=Unable to load $1 command!
+loadCommandSuccess=Success load $1 command!
+loadEventSuccess=Success load $1 event!
+errorListen=Error api.listen, Error: $1
+loadPluginSuccess=Success load $1 Plugins!
+errorSetup=Cannot run plugin setup $1!
+loadPlugin=Success load $1 plugin!
+errorCallback=The input parameter must be a function!
+successConnectDB=Connected to Database success!
+successLoadModels=Models Database success loaded!

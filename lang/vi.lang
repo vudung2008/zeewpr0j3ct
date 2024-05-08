@@ -1,0 +1,13 @@
+notFoundAppstate=Không tìm thấy file appstate!
+foundAppstate=Đã tìm thấy file appstate!
+errorLoadEvent=Không thể tải event $1!
+errorLoadCommand=Không thể tải lệnh $1!
+loadCommandSuccess=Tải thành công $1 lệnh!
+loadEventSuccess=Tải thành công $1 event!
+errorListen=Lỗi api.listen, Error: $1
+loadPluginSuccess=Tải thành công $1 Plugins!
+errorSetup=Không thể chạy setup cho plugin $1
+loadPlugin=Tải thành công $1 plugin!
+errorCallback=Tham số truyền vào phải là 1 function!
+successConnectDB=Đã kết nối tới Database thành công!
+successLoadModels=Đã tải thành công Models DB!
