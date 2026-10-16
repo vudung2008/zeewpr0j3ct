@@ -1,23 +1,27 @@
 ﻿{
-    "name":  "zeewpr0j3ct",
-    "version":  "1.0.0",
-    "description":  "A modular Facebook Messenger bot",
-    "main":  "index.js",
-    "scripts":  {
-                    "start":  "node .",
-                    "dev":  "node index.js",
-                    "test":  "node --test test/*.test.js",
-                    "check":  "node --check index.js"
-                },
-    "keywords":  [
-
-                 ],
-    "author":  "",
-    "license":  "ISC",
-    "dependencies":  {
-                         "@dongdev/fca-unofficial":  "^4.0.3",
-                         "chalk":  "^4.1.2",
-                         "dotenv":  "^16.4.5",
-                         "mongoose":  "^8.3.3"
-                     }
+    "name": "zeewpr0j3ct",
+    "version": "1.0.0",
+    "description": "A modular Facebook Messenger bot",
+    "main": "index.js",
+    "scripts": {
+        "start": "node .",
+        "dev": "node --watch index.js",
+        "test": "node --test test/*.test.js",
+        "check": "node --check index.js",
+        "create:command": "node scripts/createCommand.js",
+        "create:event": "node scripts/createEvent.js",
+        "create:callback": "node scripts/createCallback.js",
+        "create:plugin": "node scripts/createPlugin.js",
+        "create:language": "node scripts/createLanguage.js",
+        "create:menu": "node scripts/createMenuCommand.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@dongdev/fca-unofficial": "^4.0.3",
+        "chalk": "^4.1.2",
+        "dotenv": "^16.4.5",
+        "mongoose": "^8.3.3"
+    }
 }

@@ -58,19 +58,64 @@ src/
   app.js                 Application bootstrap
   config.js              Environment and JSON configuration
   i18n.js                Language file loading and translation
-  logger.js              Console logger
+  logger.js              Console logger with timestamps
   bot/
     commandRunner.js     Command parsing and authorization
     listener.js          MQTT event routing
     pluginRegistry.js    Plugin discovery and registration
     callbackRegistry.js  Reply/reaction/unsend callbacks
     handlers.js          Built-in callback event handlers
+    apiWrapper.js        Enhanced API methods with error handling
+    commandRegistry.js   Dynamic command registration with workflows
+    menuBuilder.js       Interactive menu builders
   database/
     connection.js        MongoDB connection
-plugins/                 Bot plugins
+plugins/                 Bot plugins and workflow definitions
+  ping.js               Example simple command
+  apitest.js            API wrapper test command
+  menu.js               Menu builder examples
+  workflow-loader.js    Auto-load workflow commands
+  workflows.js          Workflow command definitions
 lang/                    Translations
 test/                    Automated tests
+scripts/                 Auto-generate command/event/plugin files
+docs/                    Documentation
 ```
+
+## API Wrapper
+
+The bot wraps Facebook API with enhanced methods:
+
+**Error handling:** All API calls logged, errors tracked
+**Promisified methods:** `sendMessageAsync`, `getUserInfoAsync`, `getThreadInfoAsync`, etc.
+**Utilities:**
+- `api.sendMessageWithTyping(message, threadID, duration)` - Send with typing indicator
+- `api.reply(message, threadID, messageID)` - Quick reply
+- `api.isUserAdmin(userID, threadID)` - Check admin status
+- `api.isBotAdmin(threadID)` - Check if bot is admin
+- `api.getStats()` - API call statistics
+
+**Example usage in plugins:**
+
+```javascript
+module.exports.call = async (context) => {
+  const { api, threadID, senderID } = context;
+
+  // Promisified
+  const userInfo = await api.getUserInfoAsync(senderID);
+  
+  // Typing indicator
+  await api.sendMessageWithTyping('Hello!', threadID, 2000);
+  
+  // Check admin
+  const isAdmin = await api.isUserAdmin(senderID, threadID);
+  
+  // Get stats
+  const stats = api.getStats();
+};
+```
+
+See [plugins/apitest.js](./plugins/apitest.js) for full example.
 
 ## Dependency audit
 

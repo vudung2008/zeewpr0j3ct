@@ -1,4 +1,7 @@
-function buildCommandContext({ api, event, command, args }) {
+function buildCommandContext({ api, event, command, args, client }) {
+  // Store client reference in event for workflow access
+  event._client = client;
+  
   return {
     api,
     messageID: event.messageID,
@@ -9,12 +12,14 @@ function buildCommandContext({ api, event, command, args }) {
     args,
     isGroup: !!event.isGroup,
     command,
+    event,
+    client,
   };
 }
 
 async function runCommand({ api, event, client }) {
   if (!event || !event.body) return;
-
+  
   const prefix = client?.config?.PREFIX || '!';
   const message = String(event.body || '');
   if (!message.startsWith(prefix)) return;
@@ -30,7 +35,7 @@ async function runCommand({ api, event, client }) {
     return;
   }
 
-  const commandContext = buildCommandContext({ api, event, command, args });
+  const commandContext = buildCommandContext({ api, event, command, args, client });
   const permissionRequired = Number(command.config?.permission || 0);
   if (permissionRequired !== 0) {
     try {

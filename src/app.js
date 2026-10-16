@@ -8,6 +8,8 @@ const { loadPlugins } = require('./bot/pluginRegistry');
 const { createListener } = require('./bot/listener');
 const { createCallbackRegistry } = require('./bot/callbackRegistry');
 const { loadLanguage, createTranslator } = require('./i18n');
+const { createApiWrapper } = require('./bot/apiWrapper');
+const { CommandRegistry } = require('./bot/commandRegistry');
 
 function startBot(client) {
   const appStatePath = path.resolve(config.APPSTATEPATH);
@@ -24,15 +26,21 @@ function startBot(client) {
     return false;
   }
 
-  login({ appState }, (error, api) => {
+  login({ appState }, (error, rawApi) => {
     if (error) {
       client.logger(JSON.stringify(error), 'error');
       return;
     }
 
+    // Wrap API with enhanced methods
+    const api = createApiWrapper(rawApi, client);
+    
     client.api = api;
     api.setOptions(client.config.FCAOPTION || {});
     client.callbacks.attach(api);
+    
+    client.logger(`Logged in as ${api.getCurrentUserID()}`, 'success');
+    
     loadPlugins(client, path.resolve(__dirname, '../plugins'));
     createListener({ api, client, callbackRegistry: client.callbacks })();
   });
@@ -53,6 +61,9 @@ async function bootstrap() {
     events: [],
     callbacks: createCallbackRegistry(logger, getText),
   };
+
+  // Initialize command registry
+  client.commandRegistry = new CommandRegistry(client);
 
   await connectDatabase(client);
   startBot(client);
