@@ -20,13 +20,13 @@ module.exports.call = async (context) => {
           .setTitle('🍕 Pizza Menu')
           .setFooter('Reply with your choice number')
           .addItem('Margherita - $10', async ({ api, event, label }) => {
-            await api.sendMessageAsync(`You selected: ${label}`, event.threadID, event.messageID);
+            await api.sendMessageAsync(`You selected: ${label}`, event.threadID);
           })
           .addItem('Pepperoni - $12', async ({ api, event, label }) => {
-            await api.sendMessageAsync(`You selected: ${label}`, event.threadID, event.messageID);
+            await api.sendMessageAsync(`You selected: ${label}`, event.threadID);
           })
           .addItem('Hawaiian - $11', async ({ api, event, label }) => {
-            await api.sendMessageAsync(`You selected: ${label}`, event.threadID, event.messageID);
+            await api.sendMessageAsync(`You selected: ${label}`, event.threadID);
           });
         
         await replyMenu.send();
@@ -58,7 +58,7 @@ module.exports.call = async (context) => {
           items.push({
             label: `Item ${i} - Option ${i}`,
             callback: async ({ api, event, label }) => {
-              await api.sendMessageAsync(`You selected: ${label}`, event.threadID, event.messageID);
+              await api.sendMessageAsync(`You selected: ${label}`, event.threadID);
             }
           });
         }
@@ -76,10 +76,10 @@ module.exports.call = async (context) => {
         const confirmation = new ConfirmationBuilder(api, threadID)
           .setMessage('⚠️ Are you sure you want to delete all messages?')
           .onConfirm(async ({ api, event }) => {
-            await api.sendMessageAsync('✅ Confirmed! Deleting...', event.threadID, event.messageID);
+            await api.sendMessageAsync('✅ Confirmed! Deleting...', event.threadID);
           })
           .onCancel(async ({ api, event }) => {
-            await api.sendMessageAsync('❌ Cancelled', event.threadID, event.messageID);
+            await api.sendMessageAsync('❌ Cancelled', event.threadID);
           });
         
         await confirmation.send();
@@ -113,22 +113,22 @@ module.exports.call = async (context) => {
             const combatMenu = new MenuBuilder(api, event.threadID)
               .setTitle('⚔️ Combat Options')
               .addItem('Attack', async ({ api, event }) => {
-                await api.sendMessageAsync('You attacked! 💥', event.threadID, event.messageID);
+                await api.sendMessageAsync('You attacked! 💥', event.threadID);
               })
               .addItem('Defend', async ({ api, event }) => {
-                await api.sendMessageAsync('You defended! 🛡️', event.threadID, event.messageID);
+                await api.sendMessageAsync('You defended! 🛡️', event.threadID);
               })
               .addItem('Run', async ({ api, event }) => {
-                await api.sendMessageAsync('You ran away! 🏃', event.threadID, event.messageID);
+                await api.sendMessageAsync('You ran away! 🏃', event.threadID);
               });
             
             await combatMenu.send();
           })
           .addItem('🎒 Inventory', async ({ api, event }) => {
-            await api.sendMessageAsync('Opening inventory... 🎒', event.threadID, event.messageID);
+            await api.sendMessageAsync('Opening inventory... 🎒', event.threadID);
           })
           .addItem('⚙️ Settings', async ({ api, event }) => {
-            await api.sendMessageAsync('Opening settings... ⚙️', event.threadID, event.messageID);
+            await api.sendMessageAsync('Opening settings... ⚙️', event.threadID);
           });
         
         await mainMenu.send();
@@ -144,12 +144,11 @@ module.exports.call = async (context) => {
           .addItem('View Stats', async ({ api, event }) => {
             await api.sendMessageAsync(
               `📊 Your Stats:\nName: ${user.name}\nGender: ${user.gender || 'N/A'}`,
-              event.threadID,
-              event.messageID
+              event.threadID
             );
           })
           .addItem('Edit Profile', async ({ api, event }) => {
-            await api.sendMessageAsync('Opening editor...', event.threadID, event.messageID);
+            await api.sendMessageAsync('Opening editor...', event.threadID);
           });
         
         await dynamicMenu.send();

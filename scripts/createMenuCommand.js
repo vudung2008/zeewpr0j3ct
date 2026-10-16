@@ -40,13 +40,13 @@ module.exports.call = async (context) => {
       .setTitle('📋 ${commandName} Menu')
       .setFooter('Reply with your choice')
       .addItem('Option 1', async ({ api, event, label }) => {
-        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID, event.messageID);
+        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID);
       })
       .addItem('Option 2', async ({ api, event, label }) => {
-        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID, event.messageID);
+        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID);
       })
       .addItem('Option 3', async ({ api, event, label }) => {
-        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID, event.messageID);
+        await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID);
       });
 
     await menu.send();
@@ -107,7 +107,7 @@ module.exports.call = async (context) => {
       items.push({
         label: \`Item \${i}\`,
         callback: async ({ api, event, label }) => {
-          await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID, event.messageID);
+          await api.sendMessageAsync(\`You selected: \${label}\`, event.threadID);
         }
       });
     }
@@ -139,10 +139,10 @@ module.exports.call = async (context) => {
     const confirmation = new ConfirmationBuilder(api, threadID)
       .setMessage('⚠️ Are you sure you want to proceed?')
       .onConfirm(async ({ api, event }) => {
-        await api.sendMessageAsync('✅ Confirmed!', event.threadID, event.messageID);
+        await api.sendMessageAsync('✅ Confirmed!', event.threadID);
       })
       .onCancel(async ({ api, event }) => {
-        await api.sendMessageAsync('❌ Cancelled', event.threadID, event.messageID);
+        await api.sendMessageAsync('❌ Cancelled', event.threadID);
       });
 
     await confirmation.send();

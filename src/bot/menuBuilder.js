@@ -55,39 +55,32 @@ class MenuBuilder {
         message += `\n\n${this.footer}`;
       }
 
-      return new Promise((resolve, reject) => {
-        this.api.sendMessage(message, this.threadID, (err, info) => {
-          if (err) return reject(err);
+      const info = await this.api.sendMessageAsync(message, this.threadID);
 
-          // Register reply callback
-          this.api.handlerReply(info.messageID, ({ api, event }) => {
-            const userReply = String(event.body || '').trim();
-            const choice = parseInt(userReply, 10);
+      this.api.handlerReply(info.messageID, async ({ api, event }) => {
+        const userReply = String(event.body || '').trim();
+        const choice = parseInt(userReply, 10);
 
-            if (isNaN(choice) || choice < 1 || choice > this.items.length) {
-              api.sendMessage(
-                `❌ Invalid choice. Please reply with 1-${this.items.length}`,
-                event.threadID,
-                event.messageID
-              );
-              return;
-            }
+        if (isNaN(choice) || choice < 1 || choice > this.items.length) {
+          await api.sendMessageAsync(
+            `❌ Invalid choice. Please reply with 1-${this.items.length}`,
+            event.threadID
+          );
+          return;
+        }
 
-            const selected = this.items[choice - 1];
-            try {
-              selected.callback({ api, event, choice, label: selected.label });
-            } catch (error) {
-              api.sendMessage(
-                `Error: ${error.message}`,
-                event.threadID,
-                event.messageID
-              );
-            }
-          });
-
-          resolve(info);
-        });
+        const selected = this.items[choice - 1];
+        try {
+          await selected.callback({ api, event, choice, label: selected.label });
+        } catch (error) {
+          await api.sendMessageAsync(
+            `Error: ${error.message}`,
+            event.threadID
+          );
+        }
       });
+
+      return info;
     } else if (this.type === 'reaction') {
       const reactions = ['👍', '❤️', '😆', '😮', '😢', '😠', '👏', '🔥', '💯'];
       
@@ -99,34 +92,28 @@ class MenuBuilder {
         message += `\n\n${this.footer}`;
       }
 
-      return new Promise((resolve, reject) => {
-        this.api.sendMessage(message, this.threadID, (err, info) => {
-          if (err) return reject(err);
+      const info = await this.api.sendMessageAsync(message, this.threadID);
 
-          // Register reaction callback
-          this.api.handlerReaction(info.messageID, ({ api, event }) => {
-            const reaction = event.reaction;
-            const index = reactions.indexOf(reaction);
+      this.api.handlerReaction(info.messageID, async ({ api, event }) => {
+        const reaction = event.reaction;
+        const index = reactions.indexOf(reaction);
 
-            if (index === -1 || index >= this.items.length) {
-              return; // Invalid reaction, ignore
-            }
+        if (index === -1 || index >= this.items.length) {
+          return; // Invalid reaction, ignore
+        }
 
-            const selected = this.items[index];
-            try {
-              selected.callback({ api, event, choice: index + 1, label: selected.label, reaction });
-            } catch (error) {
-              api.sendMessage(
-                `Error: ${error.message}`,
-                event.threadID,
-                event.messageID
-              );
-            }
-          });
-
-          resolve(info);
-        });
+        const selected = this.items[index];
+        try {
+          await selected.callback({ api, event, choice: index + 1, label: selected.label, reaction });
+        } catch (error) {
+          await api.sendMessageAsync(
+            `Error: ${error.message}`,
+            event.threadID
+          );
+        }
       });
+
+      return info;
     }
   }
 }
@@ -162,7 +149,7 @@ class PaginatedMenuBuilder {
   async send() {
     const totalPages = Math.ceil(this.items.length / this.pageSize);
     
-    const showPage = (page) => {
+    const showPage = async (page) => {
       const start = page * this.pageSize;
       const end = start + this.pageSize;
       const pageItems = this.items.slice(start, end);
@@ -174,47 +161,42 @@ class PaginatedMenuBuilder {
       message += `\n\n📄 Page ${page + 1}/${totalPages}`;
       message += '\nReply: number (select) | "next" | "prev"';
 
-      return new Promise((resolve, reject) => {
-        this.api.sendMessage(message, this.threadID, (err, info) => {
-          if (err) return reject(err);
+      const info = await this.api.sendMessageAsync(message, this.threadID);
 
-          this.api.handlerReply(info.messageID, ({ api, event }) => {
-            const reply = String(event.body || '').trim().toLowerCase();
+      this.api.handlerReply(info.messageID, async ({ api, event }) => {
+        const reply = String(event.body || '').trim().toLowerCase();
 
-            if (reply === 'next') {
-              if (page < totalPages - 1) {
-                showPage(page + 1);
-              } else {
-                api.sendMessage('Already at last page', event.threadID, event.messageID);
-              }
-            } else if (reply === 'prev') {
-              if (page > 0) {
-                showPage(page - 1);
-              } else {
-                api.sendMessage('Already at first page', event.threadID, event.messageID);
-              }
-            } else {
-              const choice = parseInt(reply, 10);
-              if (!isNaN(choice) && choice >= 1 && choice <= this.items.length) {
-                const selected = this.items[choice - 1];
-                try {
-                  selected.callback({ api, event, choice, label: selected.label });
-                } catch (error) {
-                  api.sendMessage(`Error: ${error.message}`, event.threadID, event.messageID);
-                }
-              } else {
-                api.sendMessage(
-                  `Invalid input. Reply: 1-${this.items.length}, "next", or "prev"`,
-                  event.threadID,
-                  event.messageID
-                );
-              }
+        if (reply === 'next') {
+          if (page < totalPages - 1) {
+            await showPage(page + 1);
+          } else {
+            await api.sendMessageAsync('Already at last page', event.threadID);
+          }
+        } else if (reply === 'prev') {
+          if (page > 0) {
+            await showPage(page - 1);
+          } else {
+            await api.sendMessageAsync('Already at first page', event.threadID);
+          }
+        } else {
+          const choice = parseInt(reply, 10);
+          if (!isNaN(choice) && choice >= 1 && choice <= this.items.length) {
+            const selected = this.items[choice - 1];
+            try {
+              await selected.callback({ api, event, choice, label: selected.label });
+            } catch (error) {
+              await api.sendMessageAsync(`Error: ${error.message}`, event.threadID);
             }
-          });
-
-          resolve(info);
-        });
+          } else {
+            await api.sendMessageAsync(
+              `Invalid input. Reply: 1-${this.items.length}, "next", or "prev"`,
+              event.threadID
+            );
+          }
+        }
       });
+
+      return info;
     };
 
     return showPage(this.currentPage);
@@ -229,8 +211,8 @@ class ConfirmationBuilder {
     this.api = api;
     this.threadID = threadID;
     this.message = '';
-    this.onConfirm = null;
-    this.onCancel = null;
+    this.onConfirmCallback = null;
+    this.onCancelCallback = null;
     this.confirmText = '✅ Yes';
     this.cancelText = '❌ No';
   }
@@ -267,41 +249,36 @@ class ConfirmationBuilder {
 
     const fullMessage = `${this.message}\n\n${this.confirmText}\n${this.cancelText}\n\nReply: yes/no`;
 
-    return new Promise((resolve, reject) => {
-      this.api.sendMessage(fullMessage, this.threadID, (err, info) => {
-        if (err) return reject(err);
+    const info = await this.api.sendMessageAsync(fullMessage, this.threadID);
 
-        this.api.handlerReply(info.messageID, ({ api, event }) => {
-          const reply = String(event.body || '').trim().toLowerCase();
+    this.api.handlerReply(info.messageID, async ({ api, event }) => {
+      const reply = String(event.body || '').trim().toLowerCase();
 
-          if (['yes', 'y', 'ok', 'confirm'].includes(reply)) {
-            if (this.onConfirmCallback) {
-              try {
-                this.onConfirmCallback({ api, event });
-              } catch (error) {
-                api.sendMessage(`Error: ${error.message}`, event.threadID, event.messageID);
-              }
-            }
-          } else if (['no', 'n', 'cancel'].includes(reply)) {
-            if (this.onCancelCallback) {
-              try {
-                this.onCancelCallback({ api, event });
-              } catch (error) {
-                api.sendMessage(`Error: ${error.message}`, event.threadID, event.messageID);
-              }
-            }
-          } else {
-            api.sendMessage(
-              'Invalid response. Reply: yes/no',
-              event.threadID,
-              event.messageID
-            );
+      if (['yes', 'y', 'ok', 'confirm'].includes(reply)) {
+        if (this.onConfirmCallback) {
+          try {
+            await this.onConfirmCallback({ api, event });
+          } catch (error) {
+            await api.sendMessageAsync(`Error: ${error.message}`, event.threadID);
           }
-        });
-
-        resolve(info);
-      });
+        }
+      } else if (['no', 'n', 'cancel'].includes(reply)) {
+        if (this.onCancelCallback) {
+          try {
+            await this.onCancelCallback({ api, event });
+          } catch (error) {
+            await api.sendMessageAsync(`Error: ${error.message}`, event.threadID);
+          }
+        }
+      } else {
+        await api.sendMessageAsync(
+          'Invalid response. Reply: yes/no',
+          event.threadID
+        );
+      }
     });
+
+    return info;
   }
 }
 
@@ -314,7 +291,7 @@ class FormBuilder {
     this.threadID = threadID;
     this.fields = [];
     this.title = '';
-    this.onComplete = null;
+    this.onCompleteCallback = null;
   }
 
   setTitle(title) {
@@ -340,14 +317,14 @@ class FormBuilder {
     const responses = {};
     let currentFieldIndex = 0;
 
-    const askField = () => {
+    const askField = async () => {
       if (currentFieldIndex >= this.fields.length) {
         // All fields completed
         if (this.onCompleteCallback) {
           try {
-            this.onCompleteCallback({ api: this.api, responses });
+            await this.onCompleteCallback({ api: this.api, responses });
           } catch (error) {
-            this.api.sendMessage(`Error: ${error.message}`, this.threadID);
+            await this.api.sendMessageAsync(`Error: ${error.message}`, this.threadID);
           }
         }
         return;
@@ -356,44 +333,40 @@ class FormBuilder {
       const field = this.fields[currentFieldIndex];
       const message = `${this.title ? this.title + '\n\n' : ''}📝 ${field.label}\n(${currentFieldIndex + 1}/${this.fields.length})`;
 
-      this.api.sendMessage(message, this.threadID, (err, info) => {
-        if (err) return;
+      const info = await this.api.sendMessageAsync(message, this.threadID);
 
-        this.api.handlerReply(info.messageID, ({ api, event }) => {
-          const value = event.body;
+      this.api.handlerReply(info.messageID, async ({ api, event }) => {
+        const value = event.body;
 
-          // Validate
-          if (field.validator && typeof field.validator === 'function') {
-            try {
-              const isValid = field.validator(value);
-              if (!isValid) {
-                api.sendMessage(
-                  '❌ Invalid input. Please try again.',
-                  event.threadID,
-                  event.messageID
-                );
-                askField(); // Ask again
-                return;
-              }
-            } catch (error) {
-              api.sendMessage(
-                `❌ Validation error: ${error.message}`,
-                event.threadID,
-                event.messageID
+        // Validate
+        if (field.validator && typeof field.validator === 'function') {
+          try {
+            const isValid = field.validator(value);
+            if (!isValid) {
+              await api.sendMessageAsync(
+                '❌ Invalid input. Please try again.',
+                event.threadID
               );
-              askField(); // Ask again
+              await askField(); // Ask again
               return;
             }
+          } catch (error) {
+            await api.sendMessageAsync(
+              `❌ Validation error: ${error.message}`,
+              event.threadID
+            );
+            await askField(); // Ask again
+            return;
           }
+        }
 
-          responses[field.name] = value;
-          currentFieldIndex++;
-          askField(); // Ask next field
-        });
+        responses[field.name] = value;
+        currentFieldIndex++;
+        await askField(); // Ask next field
       });
     };
 
-    askField();
+    await askField();
   }
 }
 
